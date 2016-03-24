@@ -1,20 +1,32 @@
 /// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
 #include "Copter.h"
-
+//#include "UserCode.cpp"
 /*
  * control_stabilize.pde - init and run calls for stabilize flight mode
  */
+extern volatile uint32_t foward;
+extern volatile uint32_t right;
+extern volatile uint32_t left;
+extern volatile uint32_t back;
 
+extern volatile uint32_t DataFromCont;
+extern volatile float Roll;
+extern volatile float Pitch;
+uint32_t i = 0;
 // stabilize_init - initialise stabilize controller
+
 bool Copter::stabilize_init(bool ignore_checks)
 {
+
     // if landed and the mode we're switching from does not have manual throttle and the throttle stick is too high
     if (motors.armed() && ap.land_complete && !mode_has_manual_throttle(control_mode) && (g.rc_3.control_in > get_non_takeoff_throttle())) {
         return false;
     }
     // set target altitude to zero for reporting
     pos_control.set_alt_target(0);
+
+
 
     return true;
 }
@@ -40,10 +52,38 @@ void Copter::stabilize_run()
     // apply SIMPLE mode transform to pilot inputs
     update_simple_mode();
 
+
+
+    DataFromCont = i;//pos = back &right
+    if(foward < 100 && channel_pitch->control_in < 0){
+        channel_pitch->control_in = 0;
+    }
+    if(back < 100 && channel_pitch->control_in > 0){
+        channel_pitch->control_in = 0;
+    }
+    if(left < 100 && channel_roll->control_in < 0){
+        channel_roll->control_in = 0;
+    }
+    if(right < 100 && channel_roll->control_in > 0){
+        channel_roll->control_in = 0;
+    }
+
+
+    Roll = channel_roll->control_in;
+    Pitch = channel_pitch->control_in;
+
+
+    if (i >= 1000){
+        i = 0;
+    }
+    i++;
+
+
+
+
     // convert pilot input to lean angles
     // To-Do: convert get_pilot_desired_lean_angles to return angles as floats
     get_pilot_desired_lean_angles(channel_roll->control_in, channel_pitch->control_in, target_roll, target_pitch, aparm.angle_max);
-
     // get pilot's desired yaw rate
     target_yaw_rate = get_pilot_desired_yaw_rate(channel_yaw->control_in);
 
