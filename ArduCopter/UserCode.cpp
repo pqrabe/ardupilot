@@ -62,7 +62,7 @@ void Copter::userhook_FastLoop()
 void Copter::userhook_50Hz()
 {
     // put your 50Hz code here
-    //Printfunc();
+    Printfunc();
 }
 #endif
 
@@ -77,7 +77,7 @@ void Copter::userhook_MediumLoop()
 void Copter::userhook_SlowLoop()
 {
     // put your 3.3Hz code here
-    Printfunc();
+    //Printfunc();
 }
 #endif
 
@@ -122,7 +122,12 @@ void Printfunc(){
         buff[3] = valid(hal.uartE->read());
         buff[4] = '\0';
 
-        data = atoi(buff);
+        if(buff[0] != '\0'){
+            data = atoi(buff);
+        }else{
+            data = 9999;
+        }
+        
         switch(c){
             case 'f':
                 foward = data;
@@ -177,7 +182,7 @@ void Printfunc(){
 
     char outarr[100];
     memset(outarr,'\0',sizeof(outarr));
-    sprintf(outarr,"Hello! %d Roll:%5f Pitch:%5f \n",DataFromCont,Roll,Pitch);
+    sprintf(outarr,"Hello! f:%d Roll:%5f Pitch:%5f \n\r",foward,Roll,Pitch);
     hal.uartE->write((uint8_t*)outarr, sizeof(outarr));
 
 

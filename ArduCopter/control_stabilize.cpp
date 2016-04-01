@@ -55,16 +55,23 @@ void Copter::stabilize_run()
 
 
     DataFromCont = i;//pos = back &right
-    if(foward < 100 && channel_pitch->control_in < 0){
+    #define DST 100
+
+
+
+    if(foward < DST && channel_pitch->control_in < 0){
+        channel_pitch->control_in = 0;//(DST-foward)*40;
+    }
+    if(back < DST && channel_pitch->control_in > 0){
         channel_pitch->control_in = 0;
     }
-    if(back < 100 && channel_pitch->control_in > 0){
-        channel_pitch->control_in = 0;
-    }
-    if(left < 100 && channel_roll->control_in < 0){
+
+
+
+    if(left < DST && channel_roll->control_in < 0){
         channel_roll->control_in = 0;
     }
-    if(right < 100 && channel_roll->control_in > 0){
+    if(right < DST && channel_roll->control_in > 0){
         channel_roll->control_in = 0;
     }
 
