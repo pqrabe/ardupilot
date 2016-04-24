@@ -7,7 +7,7 @@ AP_HAL::UARTDriver *uart = nullptr;
 extern const AP_HAL::HAL& hal;
 //const AP_HAL::HAL& hal = AP_HAL::get_HAL();
 char c;
-volatile uint32_t foward;
+volatile uint32_t forward;
 volatile uint32_t right;
 volatile uint32_t left;
 volatile uint32_t back;
@@ -29,7 +29,7 @@ char Valid(char in);
 void Copter::userhook_init()
 {
     c = 0;
-    foward = 9999;
+    forward = 9999;
     right = 9999;
     left = 9999;
     back = 9999;
@@ -130,7 +130,7 @@ void Printfunc(){
         
         switch(c){
             case 'f':
-                foward = data;
+                forward = data;
                 ftime = 0;
                 break;
             case 'b':
@@ -155,7 +155,7 @@ void Printfunc(){
     ltime++;
     btime++;
     if (ftime > 20){
-        foward = 9999;
+        forward = 9999;
     }
     if (rtime > 20){
         right = 9999;
@@ -182,7 +182,7 @@ void Printfunc(){
 
     char outarr[100];
     memset(outarr,'\0',sizeof(outarr));
-    sprintf(outarr,"Hello! f:%d Roll:%5f Pitch:%5f \n\r",foward,Roll,Pitch);
+    sprintf(outarr,"Hello! f:%d Roll:%5f Pitch:%5f \n\r",forward,Roll,Pitch);
     hal.uartE->write((uint8_t*)outarr, sizeof(outarr));
 
 

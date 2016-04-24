@@ -5,7 +5,7 @@
 /*
  * control_stabilize.pde - init and run calls for stabilize flight mode
  */
-extern volatile uint32_t foward;
+extern volatile uint32_t forward;//distance to fowared object
 extern volatile uint32_t right;
 extern volatile uint32_t left;
 extern volatile uint32_t back;
@@ -55,17 +55,44 @@ void Copter::stabilize_run()
 
 
     DataFromCont = i;//pos = back &right
-    #define DST 100
+    #define DST 256
+    	int16_t cpitch = channel_pitch->control_in;
+    	int16_t croll = channel_roll->control_in;
 
 
 
-    if(foward < DST && channel_pitch->control_in < 0){
-        channel_pitch->control_in = 0;//(DST-foward)*40;
-    }
-    if(back < DST && channel_pitch->control_in > 0){
-        channel_pitch->control_in = 0;
-    }
+	if(forward < DST){
+		channel_pitch->control_in=(((-44000+cpitch)>>8)*forward)+44000;
+	}
+	if(back < DST){
+		channel_pitch->control_in=(((44000+cpitch)>>8)*forward)-44000;
+	}
 
+
+
+    //#define LONGDIST 200
+
+    //if(forward < DST && back < DST){
+    //	 channel_pitch->control_in = (back - forward)*20;
+    //}else{
+    //	
+    //}
+
+    /*if(forward < DST && back < DST){
+    	 channel_pitch->control_in = (back - forward)*20;
+    }else{
+
+	    if(forward < DST){
+	        channel_pitch->control_in = ((DST-forward)+100)*40;
+	    }else if(forward < LONGDIST && channel_pitch->control_in <= 0){
+	    	channel_pitch->control_in = (LONGDIST-forward)*40 + (channel_pitch->control_in/2);
+	    }
+	    if(back < DST){
+	        channel_pitch->control_in = (DST-back)*-40;
+	    }else if(back < LONGDIST && channel_pitch->control_in >= 0){
+	    	channel_pitch->control_in = (LONGDIST-back)*-40 + (channel_pitch->control_in/2);
+	    }
+	}*/
 
 
     if(left < DST && channel_roll->control_in < 0){
